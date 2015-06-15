@@ -8,6 +8,7 @@
 
 #import "MovieDetailViewController.h"
 #import <UIImageView+AFNetworking.h>
+#import <SVProgressHUD.h>
 
 @interface MovieDetailViewController ()
 
@@ -22,7 +23,17 @@
     self.synopsisLabel.text = self.movie[@"synopsis"];
     NSString *posterURLString = [self.movie valueForKeyPath: @"posters.detailed"];
     posterURLString = [self convertPosterUrlStringToHighRes:posterURLString];
-    [self.posterView setImageWithURL:[NSURL URLWithString:posterURLString]];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]];
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+    
+    [self.posterView setImageWithURLRequest:request placeholderImage:nil
+                                    success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                        [SVProgressHUD dismiss];
+                                        self.posterView.image = image;
+                                    } failure: nil];
+    
+    [SVProgressHUD show];
 }
 
 - (void)didReceiveMemoryWarning {
