@@ -9,6 +9,7 @@
 #import "MovieDetailViewController.h"
 #import <UIImageView+AFNetworking.h>
 #import <SVProgressHUD.h>
+#import "Utils.h"
 
 @interface MovieDetailViewController ()
 @property (weak, nonatomic) IBOutlet UIView *alertBar;
@@ -29,7 +30,7 @@
     
     [self.posterView setImageWithURLRequest:request placeholderImage:nil
         success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            self.posterView.image = image;
+            [Utils fadeInImage:self.posterView toImage: image duration:1.0f];
             self.alertBar.hidden = YES;
         } failure: ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
             self.alertBar.hidden = NO;
