@@ -11,6 +11,7 @@
 #import "MovieDetailViewController.h"
 #import <UIImageView+AFNetworking.h>
 #import <SVProgressHUD.h>
+#import "Utils.h"
 
 @interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *moviesTable;
@@ -92,8 +93,20 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     NSDictionary * movie = self.movies[indexPath.row];
     cell.titleLabel.text = movie[@"title"];
     cell.synopsisLabel.text = movie[@"synopsis"];
+    cell.posterView.image = nil;
     NSString *posterURLString = [movie valueForKeyPath: @"posters.thumbnail"];
-    [cell.posterView setImageWithURL:[NSURL URLWithString:posterURLString]];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]];
+    [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
+
+    [cell.posterView setImageWithURLRequest:request placeholderImage:nil
+                                    success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                                        [Utils fadeInImage:cell.posterView toImage: image duration:1.0f];
+                                        //cell.posterView.image = image;
+                                        self.alertBar.hidden = YES;
+                                    } failure: ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+                                        self.alertBar.hidden = NO;
+                                    }];
     return cell;
 }
 

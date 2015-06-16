@@ -7,6 +7,7 @@
 //
 
 #import "MovieCell.h"
+#import <UIImageView+AFNetworking.h>
 
 @implementation MovieCell
 
@@ -23,6 +24,7 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     self.posterView.image = nil;
+    [self.posterView cancelImageRequestOperation];
 }
 
 @end

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		224B2759A9E6F32970655CD9 /* libPods-RottenFruit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4DE64BE3B6F058AC6B7DEAB /* libPods-RottenFruit.a */; };
+		5E38EB6A1B3058DA00A37ADE /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E38EB691B3058DA00A37ADE /* Utils.m */; };
 		5E642BE71B2AA03100903D95 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E642BE61B2AA03100903D95 /* main.m */; };
 		5E642BEA1B2AA03100903D95 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E642BE91B2AA03100903D95 /* AppDelegate.m */; };
 		5E642BED1B2AA03100903D95 /* MovieDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E642BEC1B2AA03100903D95 /* MovieDetailViewController.m */; };
@@ -30,6 +31,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5E38EB681B3058DA00A37ADE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		5E38EB691B3058DA00A37ADE /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		5E642BE11B2AA03100903D95 /* RottenFruit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RottenFruit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E642BE51B2AA03100903D95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E642BE61B2AA03100903D95 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -106,6 +109,8 @@
 				5E642C0B1B2DCD7500903D95 /* MovieViewController.m */,
 				5E642C0D1B2EFAA700903D95 /* MovieCell.h */,
 				5E642C0E1B2EFAA700903D95 /* MovieCell.m */,
+				5E38EB681B3058DA00A37ADE /* Utils.h */,
+				5E38EB691B3058DA00A37ADE /* Utils.m */,
 			);
 			path = RottenFruit;
 			sourceTree = "<group>";
@@ -292,6 +297,7 @@
 				5E642BEA1B2AA03100903D95 /* AppDelegate.m in Sources */,
 				5E642C0F1B2EFAA700903D95 /* MovieCell.m in Sources */,
 				5E642BE71B2AA03100903D95 /* main.m in Sources */,
+				5E38EB6A1B3058DA00A37ADE /* Utils.m in Sources */,
 				5E642C0C1B2DCD7500903D95 /* MovieViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
