@@ -13,5 +13,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *synopsisLabel;
 @property (strong, nonatomic) NSDictionary *movie;
+@property (strong, nonatomic) UIImage *posterPlaceholder;
 @end
 

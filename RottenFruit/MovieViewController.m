@@ -110,6 +110,7 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     NSDictionary *movie = self.movies[idxPath.row];
     MovieDetailViewController *dstVC = segue.destinationViewController;
     dstVC.movie = movie;
+    dstVC.posterPlaceholder = cell.posterView.image;
 }
 
 @end
