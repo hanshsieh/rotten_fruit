@@ -10,10 +10,13 @@
 #import "MovieCell.h"
 #import "MovieDetailViewController.h"
 #import <UIImageView+AFNetworking.h>
+#import <SVProgressHUD.h>
 
 @interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *moviesTable;
 @property (strong, nonatomic) NSArray *movies;
+@property (weak, nonatomic) IBOutlet UIView *alertBar;
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 @end
 
 @implementation MovieViewController
@@ -30,13 +33,43 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     // Delegate manages sections, handles actions, etc.
     self.moviesTable.delegate = self;
     
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
+    [self.refreshControl addTarget:self action: @selector(refresh:) forControlEvents: UIControlEventValueChanged];
+    [self.moviesTable addSubview:self.refreshControl];
+    
+    [SVProgressHUD show];
+    [self loadMovies:^(NSError* error) {
+        [SVProgressHUD dismiss];
+    }];
+}
+
+- (void)loadMovies:(void (^)(NSError* error)) callback {
+    self.alertBar.hidden = YES;
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:MOVIE_URL]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (connectionError != nil) {
+            callback(connectionError);
+            return;
+        }
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         self.movies = dict[@"movies"];
         [self.moviesTable reloadData];
+        callback(nil);
     }];
-    
+}
+
+- (void)refresh:(id)sender {
+    NSLog(@"Refreshing");
+    [self loadMovies:^(NSError* error) {
+        [self.refreshControl endRefreshing];
+        if (error != nil) {
+            self.alertBar.hidden = NO;
+            return;
+        }
+        self.alertBar.hidden = YES;
+        NSLog(@"Refresh finished");
+    }];
 
 }
 

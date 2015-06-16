@@ -11,14 +11,14 @@
 #import <SVProgressHUD.h>
 
 @interface MovieDetailViewController ()
-
-
+@property (weak, nonatomic) IBOutlet UIView *alertBar;
+@property (nonatomic) BOOL loading;
 @end
 
 @implementation MovieDetailViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.alertBar.hidden = YES;
     self.titleLabel.text = self.movie[@"title"];
     self.synopsisLabel.text = self.movie[@"synopsis"];
     NSString *posterURLString = [self.movie valueForKeyPath: @"posters.detailed"];
@@ -27,13 +27,28 @@
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     
-    [self.posterView setImageWithURLRequest:request placeholderImage:nil
-                                    success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                                        [SVProgressHUD dismiss];
-                                        self.posterView.image = image;
-                                    } failure: nil];
-    
+    self.loading = YES;
     [SVProgressHUD show];
+    [self.posterView setImageWithURLRequest:request placeholderImage:nil
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            [SVProgressHUD dismiss];
+            self.posterView.image = image;
+            self.loading = NO;
+            self.alertBar.hidden = YES;
+        } failure: ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+            [SVProgressHUD dismiss];
+            self.alertBar.hidden = NO;
+            self.loading = NO;
+        }];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    if (self.loading) {
+        [SVProgressHUD show];
+    }
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [SVProgressHUD dismiss];
 }
 
 - (void)didReceiveMemoryWarning {
