@@ -162,7 +162,7 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
                                     success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
                                         [Utils fadeInImage:cell.posterView toImage: image duration:1.0f];
                                         //cell.posterView.image = image;
-                                        self.alertBar.hidden = YES;
+                                        //self.alertBar.hidden = YES;
                                     } failure: ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
                                         self.alertBar.hidden = NO;
                                     }];
