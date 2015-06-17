@@ -25,7 +25,9 @@
     NSString *posterURLString = [self.movie valueForKeyPath: @"posters.detailed"];
     posterURLString = [self convertPosterUrlStringToHighRes:posterURLString];
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]
+                                                           cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                           timeoutInterval:2.0];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     
     [self.posterView setImageWithURLRequest:request placeholderImage:nil

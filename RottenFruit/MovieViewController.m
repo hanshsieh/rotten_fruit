@@ -96,7 +96,9 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     cell.posterView.image = nil;
     NSString *posterURLString = [movie valueForKeyPath: @"posters.thumbnail"];
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:posterURLString]
+                                                       cachePolicy:NSURLRequestReturnCacheDataElseLoad
+                                                       timeoutInterval:2.0];
     [request addValue:@"image/*" forHTTPHeaderField:@"Accept"];
 
     [cell.posterView setImageWithURLRequest:request placeholderImage:nil
