@@ -13,10 +13,12 @@
 #import <SVProgressHUD.h>
 #import "Utils.h"
 
-@interface MovieViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MovieViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *moviesTable;
 @property (strong, nonatomic) NSArray *movies;
+@property (strong, nonatomic) NSArray *filteredMovies;
 @property (weak, nonatomic) IBOutlet UIView *alertBar;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 @end
 
@@ -38,11 +40,68 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
     [self.refreshControl addTarget:self action: @selector(refresh:) forControlEvents: UIControlEventValueChanged];
     [self.moviesTable addSubview:self.refreshControl];
+    self.searchBar.delegate = self;
+    self.searchBar.showsCancelButton = YES;
     
-    [SVProgressHUD show];
-    [self loadMovies:^(NSError* error) {
+    [self handleSearch];
+    /*
+        [SVProgressHUD show];
+        [self loadMovies:^(NSError* error) {
         [SVProgressHUD dismiss];
-    }];
+    }];*/
+}
+
+//search button was tapped
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self handleSearch];
+}
+
+//user finished editing the search text
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [self handleSearch];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar {
+    NSLog(@"User canceled search");
+    searchBar.text = @"";
+    [self handleSearch];
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchCurrentMovies {
+    NSString* queryString = self.searchBar.text;
+    NSLog(@"Searching with query string \"%@\"", queryString);
+    [self.searchBar resignFirstResponder];
+    
+    // If the user doesn't entry any query string
+    if (queryString == nil || queryString.length == 0) {
+        
+        // Show all the movies
+        self.filteredMovies = self.movies;
+        [self.moviesTable reloadData];
+        return;
+    }
+    self.filteredMovies = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [self.movies count]; ++i) {
+        NSDictionary *movie = self.movies[i];
+        NSString *title = movie[@"title"];
+        if ([title rangeOfString:queryString options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [(NSMutableArray*)self.filteredMovies addObject:movie];
+        }
+    }
+    [self.moviesTable reloadData];
+}
+- (void)handleSearch {
+    if (self.movies == nil) {
+        [SVProgressHUD show];
+        [self loadMovies:^(NSError* error) {
+            [SVProgressHUD dismiss];
+            [self searchCurrentMovies];
+        }];
+    } else {
+        [self searchCurrentMovies];
+    }
+    
 }
 
 - (void)loadMovies:(void (^)(NSError* error)) callback {
@@ -50,12 +109,15 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:MOVIE_URL]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         if (connectionError != nil) {
+            self.alertBar.hidden = NO;
             callback(connectionError);
             return;
         }
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         self.movies = dict[@"movies"];
+        self.filteredMovies = self.movies;
         [self.moviesTable reloadData];
+        self.alertBar.hidden = YES;
         callback(nil);
     }];
 }
@@ -64,11 +126,6 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     NSLog(@"Refreshing");
     [self loadMovies:^(NSError* error) {
         [self.refreshControl endRefreshing];
-        if (error != nil) {
-            self.alertBar.hidden = NO;
-            return;
-        }
-        self.alertBar.hidden = YES;
         NSLog(@"Refresh finished");
     }];
 
@@ -80,7 +137,7 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.movies.count;
+    return self.filteredMovies.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -90,7 +147,7 @@ static NSString* const MOVIE_CELL_REUSE_ID = @"MovieCell";
     // The indexPath isn't used in identification of the queue to use.
     // If the screen can show only 5 rows at a time, then only 5 cells object will be created.
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:MOVIE_CELL_REUSE_ID forIndexPath: indexPath];
-    NSDictionary * movie = self.movies[indexPath.row];
+    NSDictionary * movie = self.filteredMovies[indexPath.row];
     cell.titleLabel.text = movie[@"title"];
     cell.synopsisLabel.text = movie[@"synopsis"];
     cell.posterView.image = nil;
